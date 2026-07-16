@@ -1,0 +1,56 @@
+version: "3.9"
+
+# Local dev stack that mirrors the three tiers:
+# nginx (web) -> app (app tier) -> postgres (db tier)
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./web/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+    networks:
+      - three-tier
+
+  app:
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: appdb
+      DB_USER: app_user
+      DB_PASSWORD: local_dev_password
+    expose:
+      - "8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - three-tier
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: local_dev_password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U app_user -d appdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - three-tier
+
+networks:
+  three-tier:
+    driver: bridge
+
+volumes:
+  db_data:

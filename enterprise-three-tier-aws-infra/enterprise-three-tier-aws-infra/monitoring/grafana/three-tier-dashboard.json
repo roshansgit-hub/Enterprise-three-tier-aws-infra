@@ -1,0 +1,44 @@
+{
+  "title": "Three-Tier AWS Infra Overview",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "ALB Request Count",
+      "datasource": "CloudWatch",
+      "targets": [
+        { "namespace": "AWS/ApplicationELB", "metricName": "RequestCount", "statistic": "Sum" }
+      ],
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "type": "timeseries",
+      "title": "App Tier CPU Utilization",
+      "datasource": "CloudWatch",
+      "targets": [
+        { "namespace": "AWS/EC2", "metricName": "CPUUtilization", "statistic": "Average" }
+      ],
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 }
+    },
+    {
+      "type": "timeseries",
+      "title": "RDS CPU & Connections",
+      "datasource": "CloudWatch",
+      "targets": [
+        { "namespace": "AWS/RDS", "metricName": "CPUUtilization", "statistic": "Average" },
+        { "namespace": "AWS/RDS", "metricName": "DatabaseConnections", "statistic": "Average" }
+      ],
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 }
+    },
+    {
+      "type": "timeseries",
+      "title": "ALB Target Response Time",
+      "datasource": "CloudWatch",
+      "targets": [
+        { "namespace": "AWS/ApplicationELB", "metricName": "TargetResponseTime", "statistic": "p99" }
+      ],
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 }
+    }
+  ]
+}
